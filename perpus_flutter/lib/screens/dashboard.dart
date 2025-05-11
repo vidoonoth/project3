@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:perpus_flutter/screens/pengusulan.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:http/http.dart' as http;
 // import 'package:flutter_svg/flutter_svg.dart';
@@ -9,6 +8,7 @@ import 'package:perpus_flutter/components/book_card.dart';
 import 'package:perpus_flutter/components/app_bar.dart';
 import 'package:perpus_flutter/components/search_custom.dart';
 import 'package:perpus_flutter/components/category_chips.dart';
+import 'package:perpus_flutter/screens/usulan.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -55,8 +55,7 @@ class DashboardScreenState extends State<DashboardScreen> {
             child: SingleChildScrollView(
               padding: EdgeInsets.all(16.0),
               child: Column(
-                mainAxisSize:
-              MainAxisSize.min, 
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildWelcomeText(),
@@ -73,9 +72,9 @@ class DashboardScreenState extends State<DashboardScreen> {
                     iconPath: 'assets/pengusulan_login.svg',
                     buttonText: "Sampaikan Judulmu!",
                     onButtonPressed: () {
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Pengusulan()),
+                        MaterialPageRoute(builder: (context) => const Usulan()),
                       );
                     },
                     iconOnLeft: true,
@@ -88,7 +87,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                         'Koleksi Buku',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 20,                      
+                          fontSize: 20,
                         ),
                       ),
                       SizedBox(height: 16),
@@ -98,25 +97,25 @@ class DashboardScreenState extends State<DashboardScreen> {
                       SizedBox(height: 16),
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 2),                        
-                          child: Row(
-                            spacing: 10,
-                            children: [
-                              BookCard(
-                                title: 'Bintang',
-                                image: 'assets/book_images/bintang.jpeg',
-                              ),
-                              BookCard(
-                                title: 'Hujan',
-                                image: 'assets/book_images/hujan.jpeg',
-                              ),
-                              BookCard(
-                                title: 'Laut Bercerita',
-                                image: 'assets/book_images/laut_bercerita.jpg',
-                              ),
-                            ],
-                          ),
-                        ),                      
+                        padding: const EdgeInsets.symmetric(horizontal: 2),
+                        child: Row(
+                          spacing: 10,
+                          children: [
+                            BookCard(
+                              title: 'Bintang',
+                              image: 'assets/book_images/bintang.jpeg',
+                            ),
+                            BookCard(
+                              title: 'Hujan',
+                              image: 'assets/book_images/hujan.jpeg',
+                            ),
+                            BookCard(
+                              title: 'Laut Bercerita',
+                              image: 'assets/book_images/laut_bercerita.jpg',
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -132,7 +131,7 @@ class DashboardScreenState extends State<DashboardScreen> {
               } else if (index == 1) {
                 Navigator.pushReplacementNamed(context, '/buku');
               } else if (index == 2) {
-                Navigator.pushReplacementNamed(context, '/usulan');
+                Navigator.pushReplacementNamed(context, '/riwayatUsulan');
               } else if (index == 3) {
                 Navigator.pushReplacementNamed(context, '/informasi');
               } else if (index == 4) {

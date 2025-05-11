@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:perpus_flutter/screens/buku.dart';
-import 'package:perpus_flutter/screens/informasi.dart';
-import 'package:perpus_flutter/screens/pengusulan.dart';
+import 'package:perpus_flutter/screens/informasi/informasi.dart';
+import 'package:perpus_flutter/screens/riwayat_usulan.dart';
 import 'package:perpus_flutter/screens/profil.dart';
 import 'screens/login.dart';
 import 'screens/register.dart';
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
             (context) =>
                 DashboardScreen(), // Sesuaikan dengan nama class di dashboard.dart
         '/buku': (context) => BukuScreen(),
-        '/usulan': (context) => Pengusulan(),
+        '/riwayatUsulan': (context) => RiwayatUsulan(),
         '/informasi': (context) => Informasi(),
         '/profil': (context) => Profil(),
         '/notifikasi': (context) => NotifikasiScreen(),

@@ -70,7 +70,7 @@ class BukuScreen extends StatelessWidget {
           } else if (index == 1) {
             Navigator.pushReplacementNamed(context, '/buku');
           } else if (index == 2) {
-            Navigator.pushReplacementNamed(context, '/usulan');
+            Navigator.pushReplacementNamed(context, '/riwayatUsulan');
           } else if (index == 3) {
             Navigator.pushReplacementNamed(context, '/informasi');
           } else if (index == 4) {

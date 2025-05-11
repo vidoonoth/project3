@@ -86,7 +86,7 @@ class _ProfilState extends State<Profil> {
                     backgroundColor: Colors.blue,
                     minimumSize: Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(50),
                     ),
                   ),
                 ),
@@ -104,7 +104,7 @@ class _ProfilState extends State<Profil> {
                     backgroundColor: Colors.red,
                     minimumSize: Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(50),
                     ),
                   ),
                 ),
@@ -121,7 +121,7 @@ class _ProfilState extends State<Profil> {
           } else if (index == 1) {
             Navigator.pushReplacementNamed(context, '/buku');
           } else if (index == 2) {
-            Navigator.pushReplacementNamed(context, '/usulan');
+            Navigator.pushReplacementNamed(context, '/riwayatUsulan');
           } else if (index == 3) {
             Navigator.pushReplacementNamed(context, '/informasi');
           } else if (index == 4) {

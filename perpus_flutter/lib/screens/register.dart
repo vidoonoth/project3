@@ -16,67 +16,71 @@ class RegisterScreenState extends State<RegisterScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
+  TextEditingController numberPhoneController = TextEditingController();
+  TextEditingController nikController = TextEditingController();
+  String selectedGender = 'Laki-laki'; // default value
 
   Future<void> register() async {
-  final String apiUrl = 'http://192.168.1.10:8000/api/register';
+    final String apiUrl = 'http://192.168.1.10:8000/api/register';
 
-  try {
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: jsonEncode({
-        'name': nameController.text,
-        'username': usernameController.text,
-        'email': emailController.text,
-        'password': passwordController.text,
-        'password_confirmation': confirmPasswordController.text,
-      }),
-    );
-
-    if (!mounted) return; // Tambahkan ini sebelum pakai context
-
-    if (response.statusCode == 201) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Registrasi berhasil!'),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 2),
-        ),
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({
+          'name': nameController.text,
+          'username': usernameController.text,
+          'email': emailController.text,
+          'numberphone': numberPhoneController.text,
+          'nik': nikController.text,
+          'gender': selectedGender,
+          'password': passwordController.text,
+          'password_confirmation': confirmPasswordController.text,
+        }),
       );
 
-      await Future.delayed(Duration(seconds: 2));
+      if (!mounted) return; // Tambahkan ini sebelum pakai context
 
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Registrasi berhasil!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        await Future.delayed(Duration(seconds: 2));
+
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(context, '/dashboard');
+      } else {
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(responseData['message'] ?? 'Registrasi gagal!'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (error) {
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, '/dashboard');
-    } else {
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(responseData['message'] ?? 'Registrasi gagal!'),
+          content: Text('Terjadi kesalahan! Periksa koneksi Anda.'),
           backgroundColor: Colors.red,
         ),
       );
     }
-  } catch (error) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Terjadi kesalahan! Periksa koneksi Anda.'),
-        backgroundColor: Colors.red,
-      ),
-    );
   }
-}
-
-
 
   void showMessage(String message, Color color) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: color),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message), backgroundColor: color));
   }
 
   @override
@@ -102,21 +106,66 @@ class RegisterScreenState extends State<RegisterScreen> {
                 _buildTextField(nameController, "Nama Lengkap"),
                 _buildTextField(usernameController, "Username"),
                 _buildTextField(emailController, "Email atau nomor telepon"),
-                _buildTextField(passwordController, "Password", obscureText: true),
-                _buildTextField(confirmPasswordController, "Konfirmasi Password", obscureText: true),
+                _buildTextField(numberPhoneController, "Nomor HP"),
+                _buildTextField(nikController, "NIK (16 digit)"),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: DropdownButtonFormField<String>(
+                    value: selectedGender,
+                    items:
+                        ['Laki-laki', 'Perempuan'].map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedGender = value!;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+                    ),
+                  ),
+                ),
+
+                _buildTextField(
+                  passwordController,
+                  "Password",
+                  obscureText: true,
+                ),
+                _buildTextField(
+                  confirmPasswordController,
+                  "Konfirmasi Password",
+                  obscureText: true,
+                ),
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: register,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueAccent,
-                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 100),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 15,
+                      horizontal: 100,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
                   ),
                   child: Text(
                     'Daftar',
-                    style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
                 SizedBox(height: 15),
@@ -129,7 +178,10 @@ class RegisterScreenState extends State<RegisterScreen> {
                   },
                   child: Text(
                     "Sudah punya akun? Masuk",
-                    style: GoogleFonts.poppins(color: Colors.blueAccent, fontSize: 14),
+                    style: GoogleFonts.poppins(
+                      color: Colors.blueAccent,
+                      fontSize: 14,
+                    ),
                   ),
                 ),
               ],
@@ -140,7 +192,11 @@ class RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hintText, {bool obscureText = false}) {
+  Widget _buildTextField(
+    TextEditingController controller,
+    String hintText, {
+    bool obscureText = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: SizedBox(

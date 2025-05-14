@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:perpus_flutter/components/bottom_nav_screen.dart';
 import 'package:perpus_flutter/components/app_bar.dart';
+import 'edit_profil.dart';
 
 class Profil extends StatefulWidget {
   const Profil({super.key});
@@ -12,14 +13,13 @@ class Profil extends StatefulWidget {
 
 class _ProfilState extends State<Profil> {
   Future<void> _logout() async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.remove('token');
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
 
-  if (!mounted) return; // Cek apakah widget masih aktif
+    if (!mounted) return; // Cek apakah widget masih aktif
 
-  Navigator.pushReplacementNamed(context, '/login');
-}
-
+    Navigator.pushReplacementNamed(context, '/login');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +79,15 @@ class _ProfilState extends State<Profil> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const EditProfil(),
+                      ),
+                    );
+                  },
+
                   icon: Icon(Icons.edit, color: Colors.white),
                   label: Text("edit", style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(

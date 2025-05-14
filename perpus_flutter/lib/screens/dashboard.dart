@@ -1,7 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http/http.dart' as http;
 import 'package:perpus_flutter/components/bottom_nav_screen.dart';
 import 'package:perpus_flutter/components/info_card.dart';
 import 'package:perpus_flutter/components/book_card.dart';
@@ -9,6 +9,7 @@ import 'package:perpus_flutter/components/app_bar.dart';
 import 'package:perpus_flutter/components/search_custom.dart';
 import 'package:perpus_flutter/components/category_chips.dart';
 import 'package:perpus_flutter/screens/usulan.dart';
+import 'package:perpus_flutter/models/book.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -23,24 +24,21 @@ class DashboardScreenState extends State<DashboardScreen> {
     return prefs.getString('token');
   }
 
-  // Future<void> logout() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   String? token = prefs.getString('token');
+  Future<List<Book>> fetchBooks() async {
+    final response = await http.get(
+      Uri.parse('http://192.168.1.10:8000/api/koleksi'),
+      headers: {'Accept': 'application/json'},
+    );
 
-  //   if (token == null) return;
-
-  //   final response = await http.post(
-  //     Uri.parse('http://192.168.1.39:8000/api/logout'),
-  //     headers: {'Authorization': 'Bearer $token'},
-  //   );
-
-  //   if (response.statusCode == 200) {
-  //     await prefs.remove('token');
-  //     if (mounted) {
-  //       Navigator.pushReplacementNamed(context, '/login');
-  //     }
-  //   }
-  // }
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonData = json.decode(response.body);
+      return jsonData.map((book) => Book.fromJson(book)).toList();
+    } else {
+      throw Exception(
+        'Gagal memuat buku: ${response.statusCode}\n${response.body}',
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +51,7 @@ class DashboardScreenState extends State<DashboardScreen> {
           body: RefreshIndicator(
             onRefresh: () async => setState(() {}),
             child: SingleChildScrollView(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,42 +77,65 @@ class DashboardScreenState extends State<DashboardScreen> {
                     },
                     iconOnLeft: true,
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Koleksi Buku',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
                         ),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       SearchBarCustom(),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       CategoryChipsCustom(),
-                      SizedBox(height: 16),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 2),
-                        child: Row(
-                          spacing: 10,
-                          children: [
-                            BookCard(
-                              title: 'Bintang',
-                              image: 'assets/book_images/bintang.jpeg',
-                            ),
-                            BookCard(
-                              title: 'Hujan',
-                              image: 'assets/book_images/hujan.jpeg',
-                            ),
-                            BookCard(
-                              title: 'Laut Bercerita',
-                              image: 'assets/book_images/laut_bercerita.jpg',
-                            ),
-                          ],
-                        ),
+                      const SizedBox(height: 16),
+                      FutureBuilder<List<Book>>(
+                        future: fetchBooks(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Text('Error: ${snapshot.error}'),
+                            );
+                          } else if (!snapshot.hasData ||
+                              snapshot.data!.isEmpty) {
+                            return const Center(child: Text('Tidak ada buku.'));
+                          } else {
+                            final books = snapshot.data!;
+                            return SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children:
+                                    books.map((book) {
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                          right: 10.0,
+                                        ),
+                                        child: BookCard(
+                                          title: book.title,
+                                          image: book.image,
+                                          isbn: book.isbn,
+                                          description: book.description,
+                                          author: book.author,
+                                          publisher: book.publisher,
+                                          publicationYear: book.publicationYear,
+                                          synopsis: book.synopsis,
+                                          genre: book.genre,
+                                        ),
+                                      );
+                                    }).toList(),
+                              ),
+                            );
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -123,20 +144,16 @@ class DashboardScreenState extends State<DashboardScreen> {
             ),
           ),
           bottomNavigationBar: BottomNavComponent(
-            selectedIndex:
-                0, // Pastikan ini sesuai dengan indeks halaman Dashboard
+            selectedIndex: 0,
             onItemTapped: (index) {
-              if (index == 0) {
-                Navigator.pushReplacementNamed(context, '/dashboard');
-              } else if (index == 1) {
-                Navigator.pushReplacementNamed(context, '/buku');
-              } else if (index == 2) {
-                Navigator.pushReplacementNamed(context, '/riwayatUsulan');
-              } else if (index == 3) {
-                Navigator.pushReplacementNamed(context, '/informasi');
-              } else if (index == 4) {
-                Navigator.pushReplacementNamed(context, '/profil');
-              }
+              final routes = [
+                '/dashboard',
+                '/buku',
+                '/riwayatUsulan',
+                '/informasi',
+                '/profil',
+              ];
+              Navigator.pushReplacementNamed(context, routes[index]);
             },
           ),
         );
@@ -147,7 +164,7 @@ class DashboardScreenState extends State<DashboardScreen> {
   Widget _buildWelcomeText() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: const [
         Text(
           'Hi, Alfin',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),

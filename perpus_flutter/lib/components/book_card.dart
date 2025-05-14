@@ -2,9 +2,27 @@ import 'package:flutter/material.dart';
 
 class BookCard extends StatelessWidget {
   final String title;
-  final String image;
+  final String? image;
+  final String isbn;
+  final String description;
+  final String author;
+  final String publisher;
+  final String publicationYear;
+  final String synopsis;
+  final String genre;
 
-  const BookCard({super.key, required this.title, required this.image});
+  const BookCard({
+    super.key,
+    required this.title,
+    this.image,
+    required this.isbn,
+    required this.description,
+    required this.author,
+    required this.publisher,
+    required this.publicationYear,
+    required this.synopsis,
+    required this.genre,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,36 +34,52 @@ class BookCard extends StatelessWidget {
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
           isScrollControlled: true,
-          builder: (_) => BookDetailModal(title: title, image: image),
+          builder:
+              (_) => BookDetailModal(
+                title: title,
+                image: image,
+                isbn: isbn,
+                description: description,
+                author: author,
+                publisher: publisher,
+                publicationYear: publicationYear,
+                synopsis: synopsis,
+                genre: genre,
+              ),
         );
       },
       child: Container(
-        padding: EdgeInsets.all(6),
+        padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          color: Color(0xFFF1F5F9),
+          color: const Color(0xFFF1F5F9),
           borderRadius: BorderRadius.circular(12),
-          
         ),
         width: 120,
-        
         child: Column(
-          mainAxisSize:
-              MainAxisSize.min, 
+          mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(
               height: 150,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.asset(image, fit: BoxFit.cover, height: 300),
+                child:
+                    image != null
+                        ? Image.network(image!, fit: BoxFit.cover)
+                        : const Icon(
+                          Icons.image_not_supported,
+                          size: 80,
+                          color: Colors.grey,
+                        ),
               ),
             ),
             const SizedBox(height: 8),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 8),            
           ],
         ),
       ),
@@ -55,133 +89,166 @@ class BookCard extends StatelessWidget {
 
 class BookDetailModal extends StatelessWidget {
   final String title;
-  final String image;
+  final String? image;
+  final String isbn;
+  final String description;
+  final String author;
+  final String publisher;
+  final String publicationYear;
+  final String synopsis;
+  final String genre;
 
-  const BookDetailModal({super.key, required this.title, required this.image});
+  const BookDetailModal({
+    super.key,
+    required this.title,
+    this.image,
+    required this.isbn,
+    required this.description,
+    required this.author,
+    required this.publisher,
+    required this.publicationYear,
+    required this.synopsis,
+    required this.genre,
+  });
 
   @override
   Widget build(BuildContext context) {
+    // String baseUrl =
+    //     "http://192.168.1.10:8000/storage/book_Images/";
+    // String imageUrl = '$baseUrl$image';
+
     return DraggableScrollableSheet(
       expand: false,
       initialChildSize: 0.85,
       maxChildSize: 0.95,
       minChildSize: 0.4,
-      builder: (_, controller) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        child: SingleChildScrollView(
-          controller: controller,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      builder:
+          (_, controller) => Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            child: SingleChildScrollView(
+              controller: controller,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                    onPressed: () {
-                      Navigator.pop(context); // Menutup modal
-                    },
-                  ),
-                  const Text(
-                    "detail buku",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const Icon(Icons.favorite_border),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Book cover
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.asset(image, height: 200),
-              ),
-              const SizedBox(height: 12),
-
-              // Title & author
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 4),
-              const Text(
-                "Tere Liye",
-                style: TextStyle(color: Colors.grey),
-              ),
-              const SizedBox(height: 16),
-
-              // Penerbit & Tahun
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Column(
+                  // Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        "Penerbit",
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      const Text(
+                        "Detail Buku",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(height: 4),
-                      Text("Gramedia"),
+                      const Icon(Icons.favorite_border),
                     ],
                   ),
-                  SizedBox(width: 40),
-                  Column(
+                  const SizedBox(height: 16),
+
+                  // Book cover
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child:
+                        image != null
+                            ? Image.network(image!, height: 300,)
+                            : const Icon(
+                              Icons.image_not_supported,
+                              size: 80,
+                              color: Colors.grey,
+                            ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Title & author
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(author, style: const TextStyle(color: Colors.grey)),
+                  const SizedBox(height: 16),
+
+                  // Publisher & Year
+                  Wrap(
+                    spacing: 20, // jarak horizontal antar item
+                    runSpacing: 20, // jarak vertikal jika pindah ke baris baru
+                    alignment: WrapAlignment.center,
                     children: [
-                      Text(
-                        "Tahun",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                      Column(
+                        children: [
+                          const Text(
+                            "Penerbit",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(publisher),
+                        ],
                       ),
-                      SizedBox(height: 4),
-                      Text("2016"),
+                      Column(
+                        children: [
+                          const Text(
+                            "ISBN",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(isbn),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          const Text(
+                            "Deskripsi",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 4),
+                          Text('$description halaman'),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          const Text(
+                            "Tahun",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(publicationYear),
+                        ],
+                      ),
                     ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 20),
 
-              // Sinopsis
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Sinopsis",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                  // Sinopsis
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Sinopsis",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                "Lorem ipsum dolor sit amet.dadsadadav dsnbsncijs cscss sskdskdhk ahdakh dkah dkas fsfs skdk sbjs "
-                "dada eqefe vdkcsad wcqwqwq r4rbrewq fvkcej mnhhkkjdsjadjd dw d wdwdw dwdw dwdwdw "
-                "wecewdww dwwdwefgewf werwvweew wewwecw",
-                textAlign: TextAlign.justify,
-              ),
-              const SizedBox(height: 20),
+                  const SizedBox(height: 8),
+                  Text(synopsis, textAlign: TextAlign.justify),
+                  const SizedBox(height: 20),
 
-              // Kategori Chips
-              Wrap(
-                spacing: 12,
-                children: const [
-                  Chip(label: Text("Fiksi")),
-                  Chip(label: Text("Novel")),
-                  Chip(label: Text("Drama")),
-                  Chip(label: Text("non-fiksi")),
+                  // Genre
+                  Wrap(spacing: 12, children: [Chip(label: Text(genre))]),
+                  const SizedBox(height: 20),
                 ],
               ),
-              const SizedBox(height: 20),
-            ],
+            ),
           ),
-        ),
-      ),
     );
   }
 }

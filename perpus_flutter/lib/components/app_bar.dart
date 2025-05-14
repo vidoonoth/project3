@@ -13,6 +13,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Color(0xFFF8FAFC),
       elevation: 0,
       title: _buildAppBarTitle(),
+      automaticallyImplyLeading: false,
       actions: [
         IconButton(
           icon: Icon(Icons.notifications, color: Colors.blue, size: 30),
@@ -22,12 +23,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           },
         ),
       ],
-      bottom: (tabController != null && tabs != null)
-          ? TabBar(
-              controller: tabController,
-              tabs: tabs!,
-            )
-          : null, // TabBar hanya muncul jika diberikan
+      bottom:
+          (tabController != null && tabs != null)
+              ? TabBar(
+                labelColor: Color(0xFF60A5FA), // Warna teks tab aktif
+                unselectedLabelColor: Colors.grey, // Warna teks tab tidak aktif
+                indicatorColor: Color(0xFF60A5FA),
+                controller: tabController,
+                tabs: tabs!,
+              )
+              : null, // TabBar hanya muncul jika diberikan
     );
   }
 
@@ -64,7 +69,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize {
     return Size.fromHeight(
-      kToolbarHeight + (tabs != null ? 48.0 : 0.0), // Menyesuaikan tinggi saat TabBar ada/tidak
+      kToolbarHeight +
+          (tabs != null
+              ? 48.0
+              : 0.0), // Menyesuaikan tinggi saat TabBar ada/tidak
     );
   }
 }
